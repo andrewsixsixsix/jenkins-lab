@@ -2,7 +2,7 @@ pipeline {
     agent { label 'main' }
 
     tools {
-        nodejs(nodeJSInstallationName: 'node')
+        node
     }
 
     stages {
