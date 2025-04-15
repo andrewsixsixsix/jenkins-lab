@@ -23,7 +23,7 @@ pipeline {
         stage('Build Docker image') {
             steps {
                 echo 'Build Docker image stage'
-                docker build -t nodemain:v1.0 .
+                docker build -t 'nodemain:v1.0' .
             }
         }
         stage('Deploy') {
