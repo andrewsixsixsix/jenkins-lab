@@ -2,7 +2,7 @@ pipeline {
     agent { label 'main' }
 
     tools {
-        node 'NodeJS 7.8.0'
+        nodejs('node')
     }
 
     stages {
