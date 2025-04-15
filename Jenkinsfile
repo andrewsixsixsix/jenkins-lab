@@ -11,19 +11,19 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Build stage'
-                npm install
+                sh 'npm install'
             }
         }
         stage('Test') {
             steps {
                 echo 'Test stage'
-                npm test
+                sh 'npm test'
             }
         }
         stage('Build Docker image') {
             steps {
                 echo 'Build Docker image stage'
-                docker build -t 'nodemain:v1.0' .
+                sh 'docker build -t "nodemain:v1.0" .'
             }
         }
         stage('Deploy') {
