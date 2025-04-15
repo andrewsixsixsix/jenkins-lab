@@ -1,6 +1,10 @@
 pipeline {
     agent { label 'main' }
 
+    tools {
+        nodejs('node')
+    }
+
     stages {
         stage('Checkout') {
             steps {
