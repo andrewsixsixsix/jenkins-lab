@@ -2,7 +2,9 @@ pipeline {
     agent { label 'main' }
 
     tools {
-        nodejs('node')
+        nodejs(nodeJSInstallationName: 'node') {
+            sh 'npm config ls'
+        }
     }
 
     stages {
