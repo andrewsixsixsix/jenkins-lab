@@ -15,6 +15,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Build stage'
+                sh 'npm version'
+                sh 'node version'
                 sh 'npm install'
             }
         }
