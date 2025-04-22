@@ -1,8 +1,8 @@
 pipeline {
-    agent { label 'main' }
+    agent any
 
     tools {
-        nodejs('node')
+        nodejs '7.8.0'
     }
 
     stages {
@@ -15,9 +15,6 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Build stage'
-                sh '$PATH'
-                sh 'node version'
-                sh 'npm version'
                 sh 'npm install'
             }
         }
@@ -30,12 +27,22 @@ pipeline {
         stage('Build Docker image') {
             steps {
                 echo 'Build Docker image stage'
-                sh 'docker build -t "nodemain:v1.0" .'
+                script {
+                    def imageTag = env.BRANCH_NAME == 'main' ? 'nodemain:v1.0' : 'nodedev:v1.0'
+                    sh "docker build -t ${imageTag} ."
+                }
             }
         }
         stage('Deploy') {
             steps {
                 echo 'Deploy stage'
+                script {
+                    def isMain = env.BRANCH_NAME == 'main'
+                    def imageTag = isMain ? 'nodemain:v1.0' : 'nodedev:v1.0'
+                    def port = isMain ? '3000' : '3001'
+
+                    sh "docker run -d --expose ${port} -p ${port}:3000 ${imageTag}"
+                }
             }
         }
     }
