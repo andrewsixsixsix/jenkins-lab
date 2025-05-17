@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs '7.8.0'
+    }
+
+    parameters {
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['main', 'dev'],
+            description: 'Select the deployment environment'
+        )
+        choice(
+            name: 'IMAGE',
+            choices: ['nodemain:v1.0', 'nodedev:v1.0'],
+            description: 'Docker image to use for the build'
+        )
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Checking out branch: ${params.ENVIRONMENT}"
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${params.ENVIRONMENT}"]],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/andrewsixsixsix/jenkins-lab'
+                    ]]
+                ])
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Build stage'
+                sh 'npm install'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Test stage'
+                sh 'npm test'
+            }
+        }
+        stage('Build Docker image') {
+            steps {
+                echo 'Build Docker image stage'
+                sh "docker build -t ${params.IMAGE} ."
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploy stage'
+                script {
+                    def isMain = params.ENVIRONMENT == 'main'
+                    def port = isMain ? '3000' : '3001'
+
+                    sh "docker run -d --expose ${port} -p ${port}:3000 ${params.IMAGE}"
+                }
+            }
+        }
+    }
+}
